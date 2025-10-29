@@ -77,13 +77,17 @@ const report = async (request) => {
 
 const publicReport = async (request) => {
   request = validate(getCategorySchema, request);
-  const masjidId = await mosqueServices.changeTokenToMasjidId(request.user_id);
-  const masjid = await prismaClient.masjids.findFirst({ where: { id: masjidId }});
+  // const masjidId = await mosqueServices.changeTokenToMasjidId(request.user_id);
+  const masjidId = request.user_id;
+  const masjid = await prismaClient.masjids.findFirst({ where: { id: parseInt(masjidId, 10) }});
   if(!masjid) {
     return { status: 400, message: "Akses illegal!" };
   }
 
-  const results = await getReportByMasjidId(masjidId);
+  const results = await getReportByMasjidId(masjid.id);
+
+  console.log(results);
+
   return {
     message: "Laporan Keuangan berhasil diolah",
     status: 200,
